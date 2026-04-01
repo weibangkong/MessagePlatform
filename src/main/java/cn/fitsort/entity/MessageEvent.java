@@ -2,6 +2,8 @@ package cn.fitsort.entity;
 
 import cn.fitsort.observer.MessageListenerFactory;
 import cn.fitsort.observer.IMessageObserver;
+import cn.fitsort.security.AuthContext;
+import cn.fitsort.security.AuthManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
@@ -20,6 +22,8 @@ public class MessageEvent {
 
 
     public void handle() {
+        // 统一前置鉴权，不影响后续发送器分发逻辑
+        AuthManager.getAuthenticator().authenticate(new AuthContext(message));
         for (IMessageObserver senderHandler : senderHandlers) {
             senderHandler.send(message);
         }
